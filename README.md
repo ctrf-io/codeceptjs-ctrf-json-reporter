@@ -24,7 +24,7 @@ Add the reporter to your codeceptjs.config.js file:
 ```javascript
 plugins: {
   ctrfJsonReporter: {
-    require: 'codeceptjs-ctrf-json-reporter', 
+    require: 'codeceptjs-ctrf-json-reporter',
     enabled: true,
   },
     // ... other plugins ...
@@ -46,7 +46,7 @@ The reporter supports several configuration options:
 ```javascript
 plugins: {
   ctrfJsonReporter: {
-    require: 'codeceptjs-ctrf-json-reporter', 
+    require: 'codeceptjs-ctrf-json-reporter',
     enabled: true,
     outputFile: 'custom-name.json', // Optional: Output file name. Defaults to 'ctrf-report.json'.
     outputDir: 'custom-directory',  // Optional: Output directory path. Defaults to 'ctrf'.
