@@ -1,4 +1,6 @@
-# codeceptjs JSON Reporter
+# Codeceptjs JSON test results report
+
+> Save Codeceptjs test results as a JSON file
 
 A codeceptjs JSON test reporter to create test reports that follow the CTRF standard.
 
