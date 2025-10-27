@@ -1,6 +1,6 @@
 {
   "name": "codeceptjs-ctrf-json-reporter",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -9,14 +9,24 @@
     "lint": "eslint . --ext .ts --fix",
     "lint-check": "eslint . --ext .ts",
     "format": "prettier --write .",
-    "format-check": "prettier --check ."
+    "format-check": "prettier --check .",
+    "all": "npm run lint && npm run format-check && npm run build"
   },
   "files": [
     "dist/",
     "README.md"
   ],
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ctrf-io/codeceptjs-ctrf-json-reporter.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "homepage": "https://ctrf.io",
+  "author": "Matthew Thomas",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.9.0",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
