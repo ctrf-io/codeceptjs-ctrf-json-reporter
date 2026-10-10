@@ -1,3 +1,6 @@
-dist
-node_modules
-ctrf
+dist/
+node_modules/
+ctrf/
+coverage/
+reports/
+*.tgz

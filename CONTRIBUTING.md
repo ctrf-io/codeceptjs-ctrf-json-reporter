@@ -48,3 +48,40 @@ Your contributions are sincerely appreciated. We want to make contributing to th
 - Proposing new features
 
 Thank you for your interest in contributing
+
+## TypeScript compiler tooling
+
+The native TypeScript 7.0.2 compiler is installed through the exact
+`@typescript/native` alias and provides `tsc` for compilation and type checks.
+The `typescript` alias points to `@typescript/typescript6@6.0.2` so tools that
+import the compiler API remain compatible. Keep both development dependencies.
+
+Run `npm run build:check` to check source types with TypeScript 7, and
+`npm run all` for the repository checks and build.
+
+## Local verification
+
+Use Node 22.12.0 or newer. CI tests Node 22, 24 and 26; quality and security
+stages run on Node 26. Keep direct dependencies, peer dependencies and explicit
+security overrides pinned to exact versions. Update the lockfile with changes.
+
+```sh
+npm ci
+npm run all
+npm audit
+npm audit --omit=dev
+```
+
+`all` runs native TypeScript checks, Biome lint/format, Vitest with V8 coverage,
+real CodeceptJS integration scenarios, and isolated packed-consumer checks.
+Integration includes an intentional failing scenario: the harness expects the
+framework exit code and validates all final outcomes, including a flaky retry.
+Packed checks use an isolated temporary project/cache and install the CodeceptJS
+peer; they require npm registry access. They verify ESM/CommonJS runtime imports
+and both declaration consumers with native TypeScript 7.
+
+The tsup declaration build uses the TypeScript 6 compiler API. Keep its
+`ignoreDeprecations` setting scoped to `tsup.config.ts`.
+
+This version removes the old repository-local CTRF type declarations. Use
+canonical `ctrf` types and strict 0.2.0 validation in new report tests.
