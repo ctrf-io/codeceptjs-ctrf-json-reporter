@@ -38,32 +38,16 @@ Explore more <a href="https://www.ctrf.io/integrations">integrations</a> <br/>
 
 ```json
 {
+  "reportFormat": "CTRF",
+  "specVersion": "0.2.0",
+  "generatedBy": "codeceptjs-ctrf-json-reporter",
   "results": {
-    "tool": {
-      "name": "codeceptjs"
-    },
+    "tool": { "name": "codeceptjs" },
     "summary": {
-      "tests": 1,
-      "passed": 1,
-      "failed": 0,
-      "pending": 0,
-      "skipped": 0,
-      "other": 0,
-      "start": 1706828654274,
-      "stop": 1706828655782
+      "tests": 1, "passed": 1, "failed": 0, "pending": 0,
+      "skipped": 0, "other": 0, "start": 1706828654274, "stop": 1706828655782
     },
-    "tests": [
-      {
-        "name": "ctrf should generate the same report with any tool",
-        "status": "passed",
-        "duration": 100
-      }
-    ],
-    "environment": {
-      "appName": "MyApp",
-      "buildName": "MyBuild",
-      "buildNumber": "1"
-    }
+    "tests": [{ "name": "example", "status": "passed", "duration": 100 }]
   }
 }
 ```
@@ -99,7 +83,7 @@ plugins: {
 Run your tests:
 
 ```bash
-npm run codeceptjs
+npx codeceptjs run
 ```
 
 You'll find a JSON file named `ctrf-report.json` in the `ctrf` directory.
@@ -121,7 +105,7 @@ plugins: {
     osRelease: '18.04',             // Optional: Specify the OS release version.
     osVersion: '5.4.0',             // Optional: Specify the OS version.
     buildName: 'MyApp Build',       // Optional: Specify the build name.
-    buildNumber: '100',             // Optional: Specify the build number.
+    buildNumber: 100,             // Optional: Specify the build number.
   }
 }
 ```
@@ -139,3 +123,106 @@ The test object in the report includes the following [CTRF properties](https://c
 ## Support Us
 
 If you find this project useful, consider giving it a GitHub star ⭐ It means a lot to us.
+
+## Node and framework support
+
+Version 0.1.0 requires Node.js **22.12.0 or newer** and CodeceptJS **4.2.0**.
+The package uses ESM internally and publishes ESM and CommonJS entry points,
+with declarations included for TypeScript consumers. The callable plugin factory
+is preserved for CommonJS configuration. Earlier CodeceptJS 3 and Node 18/20
+are outside this version's supported range.
+
+All direct dependencies and the CodeceptJS peer dependency use exact versions.
+`ctrf@0.5.0` supplies canonical types and strict specification 0.2.0 validation.
+Every written report includes `reportFormat`, `specVersion`, `reportId`,
+`timestamp` and `generatedBy`. A validation or filesystem error prevents a
+successful report write and is surfaced through CodeceptJS's event handling.
+
+## Configure the plugin
+
+```js
+// codecept.conf.cjs
+exports.config = {
+  tests: "./tests/*_test.js",
+  helpers: {},
+  plugins: {
+    ctrf: {
+      enabled: true,
+      require: "codeceptjs-ctrf-json-reporter",
+      outputDir: "ctrf",
+      outputFile: "ctrf-report.json",
+      buildNumber: 42
+    }
+  }
+};
+```
+
+The same `plugins.ctrf` configuration works in an ESM CodeceptJS configuration.
+`outputFile` gains a `.json` extension when the supplied filename lacks it. `minimal: true` writes
+required test fields, plus retry history when available. `testType` defaults
+to `e2e`. Existing application, OS and build options remain accepted;
+`appName` is recorded in `environment.extra.appName` for strict 0.2.0 output.
+`buildNumber` accepts a non-negative safe integer or an integer string; invalid
+values are rejected. Build/repository URLs, branch, commit and test environment
+can also be supplied through the corresponding options.
+
+## Runtime metadata
+
+```js
+import { extra, ctrf } from "codeceptjs-ctrf-json-reporter/runtime";
+
+Scenario("example", () => {
+  extra({ owner: "qa", labels: ["smoke"] });
+  ctrf.extra({ labels: ["critical"] });
+});
+```
+
+CommonJS consumers can use `require("codeceptjs-ctrf-json-reporter/runtime")`.
+Objects merge recursively and arrays concatenate. Calls outside a currently
+running test are ignored. Each test attempt gets its own metadata, and earlier
+attempt metadata is retained with retry history.
+
+Reports capture available suite hierarchy, tags, file paths, timing, steps and
+failure message/stack. Retries replace the earlier outcome in the summary;
+`retryAttempts` contains completed attempts before the final attempt. A passing
+final attempt after a failure is marked flaky. No browser/device, attachment,
+screenshot, stdout or stderr collection is claimed by this version. Framework
+integration checks exercise single-process runs; parallel-worker aggregation
+is not verified. Use distinct output files for independent concurrent runs.
+
+## Development
+
+Use the commands in [CONTRIBUTING.md](CONTRIBUTING.md). The checks include real
+CodeceptJS ESM/CJS plugin loading and packed runtime/declaration consumers.
+The local development overrides patch transitive framework/tooling dependencies;
+npm does not propagate those overrides into a consumer's installation.
+
+### Consumer dependency audit
+
+A fresh consumer installing the CodeceptJS 4.2.0 peer currently reports ten
+framework-related audit findings (three high, six moderate and one low).
+The reporter checkout applies the exact development overrides below and retains
+three moderate findings through CodeceptJS's `sprintf-js` dependency; its
+production-only audit is clean. The overrides do not resolve every framework
+finding. npm ignores a dependency package's overrides, so consumers who need
+these patches must add them to their own root `package.json`:
+
+```json
+{
+  "overrides": {
+    "codeceptjs": {
+      "@xmldom/xmldom": "0.9.12",
+      "axios": "1.20.0",
+      "uuid": "11.1.1",
+      "mocha": {
+        "diff": "8.0.3",
+        "serialize-javascript": "7.1.2"
+      }
+    }
+  }
+}
+```
+
+Refresh the consumer lockfile and rerun its tests/audit after applying overrides.
+The framework integration tests exercise these patches in this repository;
+application-specific helpers still need verification in the consumer project.
