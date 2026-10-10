@@ -199,11 +199,13 @@ npm does not propagate those overrides into a consumer's installation.
 
 ### Consumer dependency audit
 
-A fresh consumer installing the CodeceptJS 4.2.0 peer currently reports nine
-framework-related audit findings (three high, five moderate and one low).
-The reporter checkout audits at zero because it applies the exact development
-overrides below. npm ignores a dependency package's overrides, so consumers
-who need these patches must add them to their own root `package.json`:
+A fresh consumer installing the CodeceptJS 4.2.0 peer currently reports ten
+framework-related audit findings (three high, six moderate and one low).
+The reporter checkout applies the exact development overrides below and retains
+three moderate findings through CodeceptJS's `sprintf-js` dependency; its
+production-only audit is clean. The overrides do not resolve every framework
+finding. npm ignores a dependency package's overrides, so consumers who need
+these patches must add them to their own root `package.json`:
 
 ```json
 {
@@ -224,11 +226,3 @@ who need these patches must add them to their own root `package.json`:
 Refresh the consumer lockfile and rerun its tests/audit after applying overrides.
 The framework integration tests exercise these patches in this repository;
 application-specific helpers still need verification in the consumer project.
-
-## Identity and lineage
-
-Reports include a UUID `reportId` for the emitted document, `runId` for the logical run, a stable `testId` for each logical test, and an `executionId` for each execution lifecycle. The final test result and each retry history entry have distinct `attemptId` values. Display names and runtime `extra` metadata remain independent of identity. Identity is included in minimal output.
-
-Set reporter options `runId` and `shardId` to coordinate distributed runs: all shards of one run should share the same non-empty `runId` and have distinct `shardId` values. Otherwise a standalone run ID is generated. Generic identity values are opaque strings, not necessarily UUIDs.
-
-Where the framework does not provide a stable logical identifier, IDs are derived from the available file, suite, test name and variant. For custom stability requirements, set `testIdResolver: (test) => "your-stable-id"`; its input exposes `name`, optional `filePath`, `suite` and `variant`. Choose an ID stable across runs and unique within your test namespace. Renaming or moving a test can change the default ID.

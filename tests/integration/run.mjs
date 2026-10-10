@@ -67,10 +67,12 @@ try {
 		assert.equal(flaky.flaky, true);
 		assert.equal(flaky.retryAttempts.length, 1);
 		assert.equal(flaky.retryAttempts[0].status, "failed");
-		assert.ok(report.runId);
+		assert.equal(report.runId, undefined);
 		assert.ok(flaky.testId);
 		assert.ok(flaky.executionId);
+		assert.ok(flaky.attemptId);
 		assert.ok(flaky.retryAttempts[0].attemptId);
+		assert.notEqual(flaky.attemptId, flaky.retryAttempts[0].attemptId);
 		assert.notEqual(flaky.executionId, flaky.retryAttempts[0].attemptId);
 		assert.equal(flaky.extra.tries, 2);
 		const passed = report.results.tests.find((test) =>

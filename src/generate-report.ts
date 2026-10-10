@@ -1,6 +1,5 @@
 import {
 	identityValue,
-	runIdentity,
 	testIdentity,
 	type IdentityOptions,
 } from "./identity.js";
@@ -128,7 +127,7 @@ export default class GenerateCtrfReport {
 	private newReport(): CTRFReport {
 		return {
 			reportFormat: "CTRF",
-			runId: runIdentity(this.reporterConfigOptions.runId),
+			runId: this.reporterConfigOptions.runId || undefined,
 			specVersion: CURRENT_SPEC_VERSION,
 			reportId: randomUUID(),
 			timestamp: new Date().toISOString(),
