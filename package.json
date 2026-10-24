@@ -13,7 +13,12 @@
 		"lint:check": "biome lint .",
 		"format:check": "biome format .",
 		"format": "biome format --write .",
-		"all": "npm run build:check && npm run lint:check && npm run format:check && npm run test:coverage && npm run test:integration && npm run test:package"
+		"all": "npm run build:check && npm run lint:check && npm run format:check && npm run test:coverage && npm run test:integration && npm run test:package",
+		"test:standard:checker": "node tests/standard/checker/run.mjs",
+		"test:standard:conformance:unit": "npm run build && node tests/standard/conformance/run.mjs unit",
+		"test:standard:conformance:integration": "npm run build && node tests/standard/conformance/run.mjs integration",
+		"test:standard:conformance": "node tests/standard/conformance/run-all.mjs",
+		"test:standard": "node tests/standard/run-all.mjs"
 	},
 	"files": [
 		"dist/",
@@ -39,7 +44,9 @@
 		"codeceptjs": "4.2.0",
 		"tsup": "8.5.1",
 		"typescript": "npm:@typescript/typescript6@6.0.2",
-		"vitest": "5.0.3"
+		"vitest": "5.0.3",
+		"ajv": "8.20.0",
+		"ajv-formats": "3.0.1"
 	},
 	"type": "module",
 	"module": "./dist/index.js",
