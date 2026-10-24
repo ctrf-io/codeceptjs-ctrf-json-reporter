@@ -85,7 +85,7 @@ try {
 		);
 		assert.equal(failed.message, "expected integration failure");
 		assert.equal(report.results.environment.buildNumber, 42);
-		console.log(`CodeceptJS 4.2.0 ${extension} plugin integration passed`);
+		console.log(`CodeceptJS ${extension} plugin integration passed`);
 	}
 } finally {
 	rmSync(dir, { recursive: true, force: true });
