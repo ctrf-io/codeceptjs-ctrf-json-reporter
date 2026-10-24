@@ -126,7 +126,7 @@ If you find this project useful, consider giving it a GitHub star ⭐ It means a
 
 ## Node and framework support
 
-Version 0.1.0 requires Node.js **22.12.0 or newer** and CodeceptJS **4.2.0**.
+Version 0.1.0 requires Node.js **22.12.0 or newer** and CodeceptJS **4.2.2**.
 The package uses ESM internally and publishes ESM and CommonJS entry points,
 with declarations included for TypeScript consumers. The callable plugin factory
 is preserved for CommonJS configuration. Earlier CodeceptJS 3 and Node 18/20
@@ -199,13 +199,11 @@ npm does not propagate those overrides into a consumer's installation.
 
 ### Consumer dependency audit
 
-A fresh consumer installing the CodeceptJS 4.2.0 peer currently reports ten
-framework-related audit findings (three high, six moderate and one low).
-The reporter checkout applies the exact development overrides below and retains
-three moderate findings through CodeceptJS's `sprintf-js` dependency; its
-production-only audit is clean. The overrides do not resolve every framework
-finding. npm ignores a dependency package's overrides, so consumers who need
-these patches must add them to their own root `package.json`:
+Audit the application root after installing the reporter and its CodeceptJS peer.
+The reporter checkout uses the tested development overrides below; npm does not
+propagate a dependency package's overrides into consumer installations. A clean
+checkout audit therefore does not establish a clean application audit. Consumers
+that need these transitive patches must add them to their own root `package.json`:
 
 ```json
 {
@@ -213,10 +211,10 @@ these patches must add them to their own root `package.json`:
     "codeceptjs": {
       "@xmldom/xmldom": "0.9.12",
       "axios": "1.20.0",
-      "uuid": "11.1.1",
+      "uuid": "14.0.3",
       "mocha": {
-        "diff": "8.0.3",
-        "serialize-javascript": "7.1.2"
+        "diff": "9.0.0",
+        "serialize-javascript": "7.1.4"
       }
     }
   }

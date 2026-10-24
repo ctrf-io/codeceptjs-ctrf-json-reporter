@@ -56,34 +56,27 @@ test("Codecept tooling / capabilities cover exactly the shared inventory", () =>
 			.sort(),
 	);
 });
-for (const id of Object.keys(expectedFailures)) {
+for (const id of [
+	"conformance/report/single-json-object",
+	"conformance/property/results.tests[].steps",
+	"conformance/property/results.tests[].steps[].name",
+	"conformance/property/results.tests[].steps[].status",
+]) {
 	const entry = catalogue.entries.find((e) => e.id === id);
-	test(`Codecept emission matcher / ${id} matches exact native rejection at both levels`, () => {
+	test(`Codecept actor steps / ${id} accepts native serialized output`, () => {
+		assert.deepEqual(expectedFailures, {});
+		assert.ok(context.samples.some((s) => s.name === "actor-step"));
+		assert.equal(context.failedEmissions.length, 0);
 		for (const level of ["unit", "integration"])
-			assert.equal(
-				runConformance(entry, context, level).issue,
-				"native-step-output-rejected",
-			);
+			runConformance(entry, context, level);
 	});
-	test(`Codecept emission matcher / ${id} rejects a successful emission`, () => {
+	test(`Codecept actor steps / ${id} rejects corrupted native output`, () => {
 		const c = clone();
-		c.failedEmissions = [];
-		c.samples.push({ ...c.samples[0], name: "actor-step" });
-		assert.throws(() => runConformance(entry, c, "unit"), /Unexpected pass/);
-	});
-	test(`Codecept emission matcher / ${id} rejects changed validation errors`, () => {
-		const c = clone();
-		c.failedEmissions[0].emissionFailure.message += "; another failure";
-		assert.throws(() => runConformance(entry, c, "unit"));
-	});
-	test(`Codecept emission matcher / ${id} requires native failure evidence`, () => {
-		const c = clone();
-		c.failedEmissions = [];
-		assert.throws(() => runConformance(entry, c, "unit"), /fixture missing/);
-	});
-	test(`Codecept emission matcher / ${id} rejects a missing file caused by infrastructure`, () => {
-		const c = clone();
-		c.failedEmissions[0].emissionFailure.errorType = "ENOENT";
+		const sample = c.samples.find((s) => s.name === "actor-step");
+		const step = sample.report.results.tests[0].steps[0];
+		if (id.endsWith(".status")) step.status = "invalid";
+		else delete step.name;
+		sample.bytes = Buffer.from(JSON.stringify(sample.report));
 		assert.throws(() => runConformance(entry, c, "unit"));
 	});
 }
@@ -120,12 +113,12 @@ test("Codecept oracle / catches a schema-valid native status mapping change", ()
 		),
 	);
 });
-test("Codecept emission evidence / never fabricates a report or bytes", () => {
-	assert.equal(context.failedEmissions.length, 1);
-	const evidence = context.failedEmissions[0];
-	assert.equal(Object.hasOwn(evidence, "report"), false);
-	assert.equal(Object.hasOwn(evidence, "bytes"), false);
-	assert.equal(evidence.emissionFailure.absentOutput, true);
+test("Codecept actor steps / retains actual bytes and native name evidence", () => {
+	assert.equal(context.failedEmissions.length, 0);
+	const sample = context.samples.find((s) => s.name === "actor-step");
+	assert.deepEqual(JSON.parse(sample.bytes.toString()), sample.report);
+	assert.equal(sample.native.attempts[0].steps[0].name, "check");
+	assert.equal(sample.report.results.tests[0].steps[0].name, "check");
 });
 test("Reporter results / completed records preserve pass, failure, pending and skip", () => {
 	const modes = [

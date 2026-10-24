@@ -61,7 +61,7 @@ Run `npm run build:check` to check source types with TypeScript 7, and
 
 ## Local verification
 
-Use Node 22.12.0 or newer. CI tests Node 22, 24 and 26; quality and security
+Use Node 22.18.0 or newer for development. CI tests Node 22, 24 and 26; quality and security
 stages run on Node 26. Keep direct dependencies, peer dependencies and explicit
 security overrides pinned to exact versions. Update the lockfile with changes.
 

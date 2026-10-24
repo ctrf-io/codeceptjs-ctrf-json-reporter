@@ -82,7 +82,7 @@ export function integrationContext(root, diagnostics) {
 		const samples = [];
 		const failedEmissions = [];
 		const scenarios = [
-			{ name: "actor-step", actor: true, passed: true, exit: undefined },
+			{ name: "actor-step", actor: true, passed: true, exit: 0 },
 			{
 				name: "actor-minimal",
 				actor: true,
@@ -217,37 +217,7 @@ export function integrationContext(root, diagnostics) {
 							path.join(diagnostics, `${name}-report.json`),
 						);
 				}
-				if (!fileExists) {
-					assert.equal(
-						scenario.name,
-						"actor-step",
-						"Unexpected missing report",
-					);
-					assert.ok([0, 1].includes(outcome.status));
-					const text = outcome.stdout + outcome.stderr;
-					const match = text.match(
-						/ValidationError: (CTRF validation failed:\n\/results\/tests\/0\/steps\/0: must have required property 'name')/u,
-					);
-					failedEmissions.push({
-						name: "actor-step",
-						emissionFailure: {
-							message: match?.[1] ?? text,
-							errorType: match
-								? "ValidationError"
-								: "UnexpectedEmissionFailure",
-							absentOutput: true,
-							nativeSteps: native.attempts.flatMap((a) =>
-								(a.steps ?? []).map((step) => ({
-									title: step.title,
-									helperMethod: step.helperMethod,
-									name: step.rawName,
-									status: step.status,
-								})),
-							),
-						},
-					});
-					continue;
-				}
+				assert.ok(fileExists, `${scenario.name}: missing serialized report`);
 				samples.push({
 					name,
 					base64: bytes.toString("base64"),
