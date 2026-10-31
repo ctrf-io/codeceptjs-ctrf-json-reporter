@@ -4,6 +4,7 @@ Scenario("passing ✓ @smoke", ({ I }) => {
 	extra({ owner: "first", nested: { one: true }, list: ["one"] });
 	extra({ owner: "last", nested: { two: true }, list: ["two"] });
 	if (process.env.CTRF_ACTOR_STEP === "true") I.check(true);
+	if (process.env.CTRF_ACTOR_FAIL === "true") I.check(false);
 });
 Scenario.skip("skipped", () => {});
 let recovery = 0;

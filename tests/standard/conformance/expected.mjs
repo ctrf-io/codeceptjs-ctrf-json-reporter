@@ -71,11 +71,14 @@ export function expectedReport(native, options) {
 			if (t.steps?.length)
 				result.steps = t.steps.map((s) => ({
 					name: s.name,
-					status: ["passed", "failed", "skipped", "pending", "other"].includes(
-						s.status,
-					)
-						? s.status
-						: "other",
+					status:
+						s.status === "success"
+							? "passed"
+							: ["passed", "failed", "skipped", "pending", "other"].includes(
+										s.status,
+									)
+								? s.status
+								: "other",
 				}));
 			const extra = nativeExtra(t.title, t.attempt);
 			if (extra) result.extra = extra;

@@ -1,4 +1,5 @@
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import event from "codeceptjs/lib/event";
@@ -62,6 +63,31 @@ describe("CTRF reports", () => {
 			steps: [{ name: "check", status: "passed" }],
 		});
 	});
+	it.each([
+		["success", "passed"],
+		["failed", "failed"],
+		["pending", "pending"],
+		["queued", "other"],
+		["passed", "passed"],
+		["skipped", "skipped"],
+		["other", "other"],
+		["unknown", "other"],
+	])("maps native actor step %s to %s", (nativeStatus, expectedStatus) => {
+		const imported = createRequire(import.meta.url)(
+			"codeceptjs/lib/step/helper",
+		);
+		const HelperStep = imported.default ?? imported;
+		const step = new HelperStep({}, "check");
+		step.setStatus(nativeStatus);
+		const t = { ...test(), steps: [step] };
+		event.dispatcher.emit(event.test.passed, t);
+		const report = finish();
+		validateStrict(report);
+		expect(report.results.tests[0].steps).toEqual([
+			{ name: "check", status: expectedStatus },
+		]);
+	});
+
 	it("counts final outcomes once and captures failure errors", () => {
 		const failed = test("failed");
 		event.dispatcher.emit(event.test.failed, failed, new Error("broken"));
