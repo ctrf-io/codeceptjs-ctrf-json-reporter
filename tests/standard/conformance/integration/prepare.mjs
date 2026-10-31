@@ -84,6 +84,13 @@ export function integrationContext(root, diagnostics) {
 		const scenarios = [
 			{ name: "actor-step", actor: true, passed: true, exit: 0 },
 			{
+				name: "actor-failed",
+				actor: true,
+				actorFail: true,
+				passed: true,
+				exit: 1,
+			},
+			{
 				name: "actor-minimal",
 				actor: true,
 				options: { minimal: true },
@@ -133,6 +140,7 @@ export function integrationContext(root, diagnostics) {
 				...scenario.options,
 			};
 			env.CTRF_ACTOR_STEP = String(scenario.actor ?? false);
+			env.CTRF_ACTOR_FAIL = String(scenario.actorFail ?? false);
 			env.CTRF_FIXTURE_PASSED = String(scenario.passed ?? false);
 			env.CTRF_FIXTURE_CONFIG = JSON.stringify({
 				...scenario,
@@ -187,7 +195,8 @@ export function integrationContext(root, diagnostics) {
 						last.status,
 						last.title === "skipped"
 							? "skipped"
-							: last.title === "retry exhausted" && !scenario.passed
+							: (last.title === "retry exhausted" && !scenario.passed) ||
+									(last.title === "passing ✓ @smoke" && scenario.actorFail)
 								? "failed"
 								: "passed",
 						`${scenario.name}: independent final outcome ${last.title}`,
@@ -258,13 +267,34 @@ export function integrationContext(root, diagnostics) {
 					2,
 					"Two real worker threads must run",
 				);
-			if (scenario.actor)
+			if (scenario.actor) {
+				const actor = nativeCases.find((t) => t.title === "passing ✓ @smoke");
+				assert.deepEqual(
+					actor.steps.map((step) => step.status),
+					scenario.actorFail ? ["success", "failed"] : ["success"],
+				);
+				const emitted = samples
+					.find((sample) => sample.name === scenario.name)
+					.report.results.tests.find((t) => t.name === actor.title);
+				if (scenario.options?.minimal) assert.equal(emitted.steps, undefined);
+				else
+					assert.deepEqual(
+						emitted.steps,
+						scenario.actorFail
+							? [
+									{ name: "check", status: "passed" },
+									{ name: "check", status: "failed" },
+								]
+							: [{ name: "check", status: "passed" }],
+					);
+				assert.equal(emitted.status, scenario.actorFail ? "failed" : "passed");
 				assert.ok(
 					nativeCases.some((t) =>
 						t.steps?.some((step) => step.helperMethod === "check"),
 					),
 					"A real actor step must run",
 				);
+			}
 		}
 		const full = samples.find((s) => s.name === "full");
 		checkEntry(

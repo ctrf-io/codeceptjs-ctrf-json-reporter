@@ -175,3 +175,22 @@ test("Codecept oracle / omitted zero retry count still checks absence of history
 		/native unretried/,
 	);
 });
+
+test("Codecept actor steps / success must map to passed rather than other", () => {
+	const sample = context.samples.find((s) => s.name === "actor-step");
+	assert.equal(sample.native.attempts[0].steps[0].status, "success");
+	assert.equal(sample.report.results.tests[0].steps[0].status, "passed");
+	const c = clone();
+	const changed = c.samples.find((s) => s.name === "actor-step");
+	changed.report.results.tests[0].steps[0].status = "other";
+	changed.bytes = Buffer.from(JSON.stringify(changed.report));
+	assert.throws(() =>
+		runConformance(
+			catalogue.entries.find(
+				(e) => e.path === "results.tests[].steps[].status",
+			),
+			c,
+			"unit",
+		),
+	);
+});

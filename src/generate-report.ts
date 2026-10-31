@@ -231,11 +231,14 @@ export default class GenerateCtrfReport {
 			if (test.steps?.length)
 				result.steps = test.steps.map((step) => ({
 					name: step.name,
-					status: ["passed", "failed", "skipped", "pending", "other"].includes(
-						step.status ?? "",
-					)
-						? (step.status as TestStatus)
-						: "other",
+					status:
+						step.status === "success"
+							? "passed"
+							: ["passed", "failed", "skipped", "pending", "other"].includes(
+										step.status ?? "",
+									)
+								? (step.status as TestStatus)
+								: "other",
 				}));
 			if (this.current === test && Object.keys(this.metadata).length)
 				result.extra = mergeExtra({}, this.metadata);
