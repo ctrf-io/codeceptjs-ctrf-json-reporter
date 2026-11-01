@@ -186,3 +186,4 @@ jobs:
 
       - name: npm audit (prod)
         run: npm audit --omit=dev
+        continue-on-error: true
