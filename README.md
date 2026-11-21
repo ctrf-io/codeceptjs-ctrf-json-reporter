@@ -39,7 +39,7 @@ Explore more <a href="https://www.ctrf.io/integrations">integrations</a> <br/>
 ```json
 {
   "reportFormat": "CTRF",
-  "specVersion": "0.2.0",
+  "specVersion": "0.3.0",
   "generatedBy": "codeceptjs-ctrf-json-reporter",
   "results": {
     "tool": { "name": "codeceptjs" },
@@ -133,7 +133,7 @@ is preserved for CommonJS configuration. Earlier CodeceptJS 3 and Node 18/20
 are outside this version's supported range.
 
 All direct dependencies and the CodeceptJS peer dependency use exact versions.
-`ctrf@0.5.0` supplies canonical types and strict specification 0.2.0 validation.
+`ctrf@0.6.0` supplies canonical types and strict specification 0.3.0 validation.
 Every written report includes `reportFormat`, `specVersion`, `reportId`,
 `timestamp` and `generatedBy`. A validation or filesystem error prevents a
 successful report write and is surfaced through CodeceptJS's event handling.
@@ -161,7 +161,7 @@ The same `plugins.ctrf` configuration works in an ESM CodeceptJS configuration.
 `outputFile` gains a `.json` extension when the supplied filename lacks it. `minimal: true` writes
 required test fields, plus retry history when available. `testType` defaults
 to `e2e`. Existing application, OS and build options remain accepted;
-`appName` is recorded in `environment.extra.appName` for strict 0.2.0 output.
+`appName` is recorded in `environment.extra.appName` for strict 0.3.0 output.
 `buildNumber` accepts a non-negative safe integer or an integer string; invalid
 values are rejected. Build/repository URLs, branch, commit and test environment
 can also be supplied through the corresponding options.

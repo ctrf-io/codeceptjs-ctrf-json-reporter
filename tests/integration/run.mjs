@@ -55,7 +55,7 @@ try {
 		const report = JSON.parse(
 			readFileSync(path.join(output, "ctrf-report.json"), "utf8"),
 		);
-		validateStrict(report, { specVersion: "0.2.0" });
+		validateStrict(report, { specVersion: "0.3.0" });
 		assert.equal(report.results.summary.tests, 4);
 		assert.equal(report.results.summary.passed, 2);
 		assert.equal(report.results.summary.failed, 1);

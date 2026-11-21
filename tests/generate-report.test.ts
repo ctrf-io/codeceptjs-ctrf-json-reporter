@@ -38,15 +38,15 @@ afterEach(() => {
 });
 
 describe("CTRF reports", () => {
-	it("writes strict 0.2.0 reports with canonical root fields and scenario details", () => {
+	it("writes strict 0.3.0 reports with canonical root fields and scenario details", () => {
 		const t = test();
 		event.dispatcher.emit(event.test.started, t);
 		event.dispatcher.emit(event.test.passed, t);
 		const r = finish();
-		validateStrict(r, { specVersion: "0.2.0" });
+		validateStrict(r, { specVersion: "0.3.0" });
 		expect(r).toMatchObject({
 			reportFormat: "CTRF",
-			specVersion: "0.2.0",
+			specVersion: "0.3.0",
 			generatedBy: "codeceptjs-ctrf-json-reporter",
 		});
 		expect(r.reportId).toMatch(/^[a-f0-9-]{36}$/);
