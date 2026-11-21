@@ -69,7 +69,7 @@ try {
 			"utf8",
 		),
 	);
-	assert.equal(installed.dependencies.ctrf, "0.5.0");
+	assert.equal(installed.dependencies.ctrf, "0.6.0");
 	assert.ok(
 		!installed.dependencies.typescript &&
 			!installed.dependencies["@typescript/native"],
